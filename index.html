@@ -253,6 +253,37 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (modular CDN - no npm needed) -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCyiLdGwQsWzk-G4Xm2IrjYIWywWhDV5HI",
+        authDomain: "badminton-scoreboard-7f273.firebaseapp.com",
+        databaseURL: "https://badminton-scoreboard-7f273-default-rtdb.firebaseio.com",
+        projectId: "badminton-scoreboard-7f273",
+        storageBucket: "badminton-scoreboard-7f273.firebasestorage.app",
+        messagingSenderId: "1092235908792",
+        appId: "1:1092235908792:web:7a4390290fb033af55864d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Expose to app.js via window globals
+    window.firebaseDB = db;
+    window.firebaseRef = ref;
+    window.firebaseSet = set;
+    window.firebaseOnValue = onValue;
+    window.firebaseReady = true;
+
+    // If app.js already loaded, start the listener
+    if (typeof window.listenToFirebase === 'function') {
+        window.listenToFirebase();
+    }
+    </script>
+
     <script src="app.js"></script>
 </body>
 </html>

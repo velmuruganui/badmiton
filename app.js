@@ -228,6 +228,7 @@ let state = {
 };
 
 function loadState() {
+    // Load from localStorage first (instant, works offline)
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
@@ -235,17 +236,87 @@ function loadState() {
             state.matches = parsed.matches || {};
         }
     } catch (e) {
-        console.error('Failed to load state:', e);
+        console.error('Failed to load local state:', e);
     }
 }
 
 function saveState() {
+    // Save to localStorage (instant backup)
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
             matches: state.matches,
         }));
     } catch (e) {
-        console.error('Failed to save state:', e);
+        console.error('Failed to save local state:', e);
+    }
+
+    // Sync to Firebase (real-time for all devices)
+    saveToFirebase();
+}
+
+// ============================================
+// FIREBASE REAL-TIME SYNC
+// ============================================
+
+const DB_PATH = 'tournament/matches';
+let _ignoreNextFirebaseUpdate = false;
+
+function saveToFirebase() {
+    if (!window.firebaseReady) return;
+    _ignoreNextFirebaseUpdate = true;
+    const dbRef = window.firebaseRef(window.firebaseDB, DB_PATH);
+    window.firebaseSet(dbRef, state.matches)
+        .then(() => {
+            setTimeout(() => { _ignoreNextFirebaseUpdate = false; }, 500);
+        })
+        .catch(err => {
+            console.error('Firebase save error:', err);
+            _ignoreNextFirebaseUpdate = false;
+        });
+}
+
+function listenToFirebase() {
+    if (!window.firebaseReady) return;
+
+    const dbRef = window.firebaseRef(window.firebaseDB, DB_PATH);
+    window.firebaseOnValue(dbRef, (snapshot) => {
+        // Skip if this update was triggered by our own save
+        if (_ignoreNextFirebaseUpdate) return;
+
+        const data = snapshot.val();
+        if (data) {
+            state.matches = data;
+        } else {
+            state.matches = {};
+        }
+
+        // Update localStorage to stay in sync
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ matches: state.matches }));
+        } catch (e) { /* ignore */ }
+
+        // Re-render the current view with new data
+        refreshCurrentView();
+    });
+}
+
+function refreshCurrentView() {
+    const hash = window.location.hash || '#/';
+    const parts = hash.replace('#/', '').split('/');
+
+    if (parts[0] === 'scoring' && parts[1] && parts[2]) {
+        // On scoring page: update score display without disrupting the referee
+        if (state.currentMatch) {
+            updateScoreDisplay();
+            updateScoringStatus();
+            renderScoreLog();
+        }
+    } else if (parts[0] === 'category' && parts[1]) {
+        // On category page: re-render matches and points table
+        renderCategoryContent(parts[1]);
+    } else {
+        // On dashboard: update statuses
+        updateDashboardStatuses();
     }
 }
 
@@ -261,12 +332,17 @@ function getMatchState(matchId) {
             timerSeconds: 0,
         };
     }
-    return state.matches[matchId];
+    // Firebase converts arrays to objects and drops empty arrays - normalize
+    const ms = state.matches[matchId];
+    if (!ms.log) ms.log = [];
+    if (!Array.isArray(ms.log)) ms.log = Object.values(ms.log);
+    if (!ms.faults) ms.faults = { A: { out: 0, netHit: 0, netTouch: 0, doubleHit: 0 }, B: { out: 0, netHit: 0, netTouch: 0, doubleHit: 0 } };
+    return ms;
 }
 
 function resetAllData() {
     state.matches = {};
-    saveState();
+    saveState(); // Clears both localStorage and Firebase
     navigate('#/');
 }
 
@@ -1433,8 +1509,15 @@ function toggleRules() {
 // ============================================
 
 function init() {
-    loadState();
-    handleRoute(); // Render based on current hash (supports refresh & bookmarks)
+    loadState();          // Load from localStorage first (instant)
+    handleRoute();        // Render based on current hash
+
+    // Firebase module loads async - try now, or it will call listenToFirebase() when ready
+    if (window.firebaseReady) {
+        listenToFirebase();
+    }
+    // Expose so the Firebase module script can call it once loaded
+    window.listenToFirebase = listenToFirebase;
 }
 
 // Run on load
