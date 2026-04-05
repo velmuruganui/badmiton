@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Tournament Scoreboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Dashboard / Home Screen -->
+    <div id="dashboard" class="page active">
+        <header class="dashboard-header">
+            <h1>Badminton Tournament</h1>
+            <p class="subtitle">Scoreboard System</p>
+        </header>
+
+        <div class="rules-banner" id="rulesBanner">
+            <div class="rules-toggle" onclick="toggleRules()">
+                <span>Tournament Rules</span>
+                <span class="arrow" id="rulesArrow">&#9660;</span>
+            </div>
+            <div class="rules-content" id="rulesContent">
+                <ul>
+                    <li><strong>Game point: 21</strong> | Max cap: 30 points</li>
+                    <li>Deuce at 20-20: win by 2 points</li>
+                    <li>At 29-29: next point wins (30-29)</li>
+                    <li><strong>Faults:</strong> Out of court, Net hit (no cross), Net touch, Double hit</li>
+                    <li>Shuttle on the line = IN | Outside the line = OUT</li>
+                    <li>Umpire/organizer decision is final</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="category-grid">
+            <!-- Seniors Men's Doubles -->
+            <div class="category-card seniors" onclick="openCategory('seniors')">
+                <div class="card-header">Men's Doubles</div>
+                <div class="card-body">
+                    <span class="team-count">6 Teams</span>
+                    <span class="format-badge">Round Robin</span>
+                    <span class="scoring-info">20 pts/match</span>
+                </div>
+                <div class="card-status" id="seniors-status">Not Started</div>
+            </div>
+
+            <!-- Kid's & Men's Doubles -->
+            <div class="category-card kids-mens" onclick="openCategory('kidsMens')">
+                <div class="card-header">Kid's & Men's Doubles</div>
+                <div class="card-body">
+                    <span class="team-count">6 Teams</span>
+                    <span class="format-badge">Knockout</span>
+                    <span class="scoring-info">15 pts/match</span>
+                </div>
+                <div class="card-status" id="kidsMens-status">Not Started</div>
+            </div>
+
+            <!-- Men's & Women's Mixed Doubles -->
+            <div class="category-card mixed" onclick="openCategory('mixed')">
+                <div class="card-header">Men's & Women's Mixed</div>
+                <div class="card-body">
+                    <span class="team-count">6 Teams</span>
+                    <span class="format-badge">Knockout</span>
+                    <span class="scoring-info">15 pts/match</span>
+                </div>
+                <div class="card-status" id="mixed-status">Not Started</div>
+            </div>
+
+            <!-- Women's Doubles -->
+            <div class="category-card womens" onclick="openCategory('womens')">
+                <div class="card-header">Women's Doubles</div>
+                <div class="card-body">
+                    <span class="team-count">3 Teams</span>
+                    <span class="format-badge">Round Robin</span>
+                    <span class="scoring-info">20 pts/match</span>
+                </div>
+                <div class="card-status" id="womens-status">Not Started</div>
+            </div>
+
+            <!-- Kid's Doubles -->
+            <div class="category-card kids" onclick="openCategory('kidsDoubles')">
+                <div class="card-header">Kid's Doubles</div>
+                <div class="card-body">
+                    <span class="team-count">3 Teams</span>
+                    <span class="format-badge">Round Robin</span>
+                    <span class="scoring-info">20 pts/match</span>
+                </div>
+                <div class="card-status" id="kidsDoubles-status">Not Started</div>
+            </div>
+
+            <!-- Kid's Women Singles -->
+            <div class="category-card singles" onclick="openCategory('kidsSingles')">
+                <div class="card-header">Kid's Women Singles</div>
+                <div class="card-body">
+                    <span class="team-count">2 Players</span>
+                    <span class="format-badge">Best of 3</span>
+                    <span class="scoring-info">21 pts/game</span>
+                </div>
+                <div class="card-status" id="kidsSingles-status">Not Started</div>
+            </div>
+        </div>
+
+        <div class="dashboard-actions">
+            <button class="btn btn-danger" onclick="confirmResetAll()">Reset All Data</button>
+        </div>
+    </div>
+
+    <!-- Category Page -->
+    <div id="categoryPage" class="page">
+        <header class="category-header">
+            <button class="btn-back" onclick="goToDashboard()">&larr; Back</button>
+            <h2 id="categoryTitle"></h2>
+            <div class="category-meta">
+                <span id="categoryScoring"></span>
+                <span id="categoryTiming"></span>
+            </div>
+        </header>
+
+        <div class="tab-bar">
+            <button class="tab active" onclick="switchTab('matches')" id="tabMatches">Matches</button>
+            <button class="tab" onclick="switchTab('pointsTable')" id="tabPointsTable">Points Table</button>
+            <button class="tab" onclick="switchTab('teams')" id="tabTeams">Teams</button>
+        </div>
+
+        <!-- Matches Tab -->
+        <div class="tab-content active" id="matchesTab">
+            <div id="roundsContainer"></div>
+        </div>
+
+        <!-- Points Table Tab -->
+        <div class="tab-content" id="pointsTableTab">
+            <div id="pointsTableContainer"></div>
+            <div id="winnerDisplay" class="winner-display hidden"></div>
+        </div>
+
+        <!-- Teams Tab -->
+        <div class="tab-content" id="teamsTab">
+            <div id="teamsContainer"></div>
+        </div>
+    </div>
+
+    <!-- Live Scoring Page -->
+    <div id="scoringPage" class="page">
+        <header class="scoring-header">
+            <button class="btn-back" onclick="exitScoring()">&larr; Back</button>
+            <div class="match-info">
+                <span id="scoringMatchTitle"></span>
+                <span id="scoringReferee"></span>
+                <span id="scoringCourt"></span>
+            </div>
+            <div class="match-timer" id="matchTimer">00:00</div>
+        </header>
+
+        <div class="scoring-status-bar">
+            <span id="scoringStatus" class="status-normal">In Progress</span>
+            <span id="scoringGameInfo"></span>
+        </div>
+
+        <div class="scoreboard">
+            <div class="team-score-panel team-a-panel">
+                <div class="team-name" id="scoringTeamA"></div>
+                <div class="score-display" id="scoreA">0</div>
+                <div class="score-buttons">
+                    <button class="btn-score btn-plus" onclick="addPoint('A')">+1</button>
+                    <button class="btn-score btn-minus" onclick="removePoint('A')">-1</button>
+                </div>
+            </div>
+
+            <div class="score-divider">
+                <span class="vs-text">VS</span>
+            </div>
+
+            <div class="team-score-panel team-b-panel">
+                <div class="team-name" id="scoringTeamB"></div>
+                <div class="score-display" id="scoreB">0</div>
+                <div class="score-buttons">
+                    <button class="btn-score btn-plus" onclick="addPoint('B')">+1</button>
+                    <button class="btn-score btn-minus" onclick="removePoint('B')">-1</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="fault-section">
+            <h3>Faults (awards point to opponent)</h3>
+            <div class="fault-buttons">
+                <div class="fault-col">
+                    <p id="faultLabelA" class="fault-team-label"></p>
+                    <button class="btn-fault" onclick="recordFault('A', 'out')">Out of Court</button>
+                    <button class="btn-fault" onclick="recordFault('A', 'netHit')">Net Hit</button>
+                    <button class="btn-fault" onclick="recordFault('A', 'netTouch')">Net Touch</button>
+                    <button class="btn-fault" onclick="recordFault('A', 'doubleHit')">Double Hit</button>
+                </div>
+                <div class="fault-col">
+                    <p id="faultLabelB" class="fault-team-label"></p>
+                    <button class="btn-fault" onclick="recordFault('B', 'out')">Out of Court</button>
+                    <button class="btn-fault" onclick="recordFault('B', 'netHit')">Net Hit</button>
+                    <button class="btn-fault" onclick="recordFault('B', 'netTouch')">Net Touch</button>
+                    <button class="btn-fault" onclick="recordFault('B', 'doubleHit')">Double Hit</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="scoring-actions">
+            <button class="btn btn-warning" onclick="undoLastAction()">Undo Last</button>
+            <button class="btn btn-success" onclick="finishMatch()" id="btnFinishMatch">Finish Match</button>
+        </div>
+
+        <div class="score-log">
+            <h3>Score Log</h3>
+            <div id="scoreLogList" class="log-list"></div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-danger" id="modalConfirmBtn" onclick="modalConfirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Winner Celebration Modal -->
+    <div id="winModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeWinModal()"></div>
+        <div class="modal-content win-modal">
+            <div class="win-icon">&#127942;</div>
+            <h2 id="winTitle"></h2>
+            <p id="winMessage"></p>
+            <div class="win-score" id="winScore"></div>
+            <button class="btn btn-success" onclick="closeWinModal()">OK</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

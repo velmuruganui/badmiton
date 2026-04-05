@@ -1,0 +1,814 @@
+/* ============================================
+   BADMINTON TOURNAMENT SCOREBOARD - STYLES
+   ============================================ */
+
+/* Reset & Base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #2e7d32;
+    --primary-light: #4caf50;
+    --primary-dark: #1b5e20;
+    --secondary: #e65100;
+    --secondary-light: #ff9800;
+    --accent: #1565c0;
+    --danger: #c62828;
+    --warning: #f9a825;
+    --success: #2e7d32;
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #212121;
+    --text-light: #757575;
+    --border: #e0e0e0;
+    --shadow: 0 2px 8px rgba(0,0,0,0.12);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.16);
+    --radius: 10px;
+    --radius-sm: 6px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Page System */
+.page {
+    display: none;
+    min-height: 100vh;
+}
+.page.active {
+    display: block;
+}
+
+/* ============================================
+   DASHBOARD
+   ============================================ */
+.dashboard-header {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    text-align: center;
+    padding: 28px 16px 22px;
+}
+.dashboard-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.dashboard-header .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+/* Rules Banner */
+.rules-banner {
+    background: #fff8e1;
+    border-bottom: 1px solid #ffe082;
+    margin: 0;
+}
+.rules-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #e65100;
+    font-size: 0.9rem;
+}
+.rules-toggle .arrow {
+    font-size: 0.75rem;
+    transition: transform 0.3s;
+}
+.rules-toggle .arrow.open {
+    transform: rotate(180deg);
+}
+.rules-content {
+    display: none;
+    padding: 0 16px 14px;
+}
+.rules-content.open {
+    display: block;
+}
+.rules-content ul {
+    list-style: none;
+    font-size: 0.82rem;
+    color: #5d4037;
+}
+.rules-content li {
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+}
+.rules-content li::before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    color: var(--secondary);
+    font-weight: bold;
+}
+
+/* Category Grid */
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px;
+}
+@media (max-width: 400px) {
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.category-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border-top: 4px solid var(--primary);
+}
+.category-card:active {
+    transform: scale(0.97);
+}
+.category-card .card-header {
+    background: var(--primary);
+    color: white;
+    padding: 10px 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+}
+.category-card.seniors .card-header { background: #2e7d32; }
+.category-card.seniors { border-top-color: #2e7d32; }
+.category-card.kids-mens .card-header { background: #1565c0; }
+.category-card.kids-mens { border-top-color: #1565c0; }
+.category-card.mixed .card-header { background: #6a1b9a; }
+.category-card.mixed { border-top-color: #6a1b9a; }
+.category-card.womens .card-header { background: #ad1457; }
+.category-card.womens { border-top-color: #ad1457; }
+.category-card.kids .card-header { background: #00838f; }
+.category-card.kids { border-top-color: #00838f; }
+.category-card.singles .card-header { background: #e65100; }
+.category-card.singles { border-top-color: #e65100; }
+
+.card-body {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+}
+.team-count {
+    font-weight: 600;
+    color: var(--text);
+}
+.format-badge {
+    display: inline-block;
+    background: #e8f5e9;
+    color: var(--primary);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    width: fit-content;
+}
+.scoring-info {
+    color: var(--text-light);
+    font-size: 0.75rem;
+}
+.card-status {
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: #fafafa;
+    border-top: 1px solid var(--border);
+}
+.card-status.in-progress {
+    color: var(--secondary);
+    background: #fff3e0;
+}
+.card-status.completed {
+    color: var(--success);
+    background: #e8f5e9;
+}
+
+.dashboard-actions {
+    padding: 16px;
+    text-align: center;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #e0e0e0; color: var(--text); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-warning { background: var(--warning); color: #212121; }
+.btn-success { background: var(--success); color: white; }
+.btn-small { padding: 6px 12px; font-size: 0.78rem; }
+.btn-back {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+/* ============================================
+   CATEGORY PAGE
+   ============================================ */
+.category-header {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.category-header h2 {
+    font-size: 1.15rem;
+    flex: 1;
+}
+.category-meta {
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    font-size: 0.78rem;
+    opacity: 0.9;
+    padding-left: 40px;
+}
+
+/* Tabs */
+.tab-bar {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-content {
+    display: none;
+    padding: 12px;
+}
+.tab-content.active {
+    display: block;
+}
+
+/* ============================================
+   ROUNDS & MATCHES (Category Page)
+   ============================================ */
+.round-section {
+    margin-bottom: 16px;
+}
+.round-header {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    padding: 8px 4px;
+    border-bottom: 2px solid var(--primary-light);
+    margin-bottom: 8px;
+}
+
+.match-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.match-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+.match-card-body {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 8px;
+}
+.match-team {
+    flex: 1;
+    text-align: center;
+}
+.match-team-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 2px;
+}
+.match-team-players {
+    font-size: 0.72rem;
+    color: var(--text-light);
+}
+.match-score-display {
+    font-size: 1.6rem;
+    font-weight: 800;
+    min-width: 90px;
+    text-align: center;
+    color: var(--primary-dark);
+}
+.match-card-footer {
+    display: flex;
+    justify-content: center;
+    padding: 8px 12px;
+    border-top: 1px solid var(--border);
+    gap: 8px;
+}
+.match-result-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.match-result-badge.win {
+    background: #e8f5e9;
+    color: var(--success);
+}
+.match-result-badge.pending {
+    background: #fff3e0;
+    color: var(--secondary);
+}
+.match-result-badge.live {
+    background: #ffebee;
+    color: var(--danger);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ============================================
+   POINTS TABLE
+   ============================================ */
+.points-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    font-size: 0.78rem;
+}
+.points-table thead {
+    background: var(--primary);
+    color: white;
+}
+.points-table th {
+    padding: 10px 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+.points-table td {
+    padding: 10px 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+.points-table tr:last-child td {
+    border-bottom: none;
+}
+.points-table tbody tr:nth-child(odd) {
+    background: #fafafa;
+}
+.points-table .team-cell {
+    text-align: left;
+    padding-left: 10px;
+    font-weight: 600;
+}
+.points-table .rank-1 {
+    background: #e8f5e9 !important;
+}
+.points-table .rank-2 {
+    background: #fff8e1 !important;
+}
+
+.winner-display {
+    margin-top: 16px;
+    text-align: center;
+}
+.winner-display.hidden { display: none; }
+.winner-badge {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 4px;
+}
+.winner-badge.gold {
+    background: linear-gradient(135deg, #ffd54f, #ffb300);
+    color: #3e2723;
+}
+.winner-badge.silver {
+    background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+    color: #37474f;
+}
+
+/* ============================================
+   TEAMS LIST
+   ============================================ */
+.team-list {
+    display: grid;
+    gap: 8px;
+}
+.team-item {
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.team-letter {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+.team-details {
+    flex: 1;
+}
+.team-details .name {
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+.team-details .players {
+    font-size: 0.78rem;
+    color: var(--text-light);
+}
+
+/* ============================================
+   LIVE SCORING PAGE
+   ============================================ */
+.scoring-header {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.match-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.match-info span:first-child {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+.match-info span:nth-child(2),
+.match-info span:nth-child(3) {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+.match-timer {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+}
+
+.scoring-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.status-normal { color: var(--primary); }
+.status-deuce { color: var(--danger); }
+.status-gameover { color: var(--text-light); }
+
+/* Scoreboard */
+.scoreboard {
+    display: flex;
+    align-items: stretch;
+    padding: 16px;
+    gap: 8px;
+    background: #fafafa;
+}
+.team-score-panel {
+    flex: 1;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.team-score-panel .team-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text);
+    min-height: 2.4em;
+    display: flex;
+    align-items: center;
+}
+.score-display {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--primary-dark);
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.15s;
+}
+.score-display.bump {
+    transform: scale(1.15);
+}
+.score-divider {
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+}
+.vs-text {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-light);
+}
+
+.score-buttons {
+    display: flex;
+    gap: 8px;
+}
+.btn-score {
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s;
+}
+.btn-score:active { transform: scale(0.9); }
+.btn-plus {
+    background: var(--primary);
+    color: white;
+}
+.btn-minus {
+    background: #e0e0e0;
+    color: var(--text);
+}
+
+.team-a-panel { border-top: 4px solid var(--primary); }
+.team-b-panel { border-top: 4px solid var(--secondary); }
+.team-b-panel .score-display { color: var(--secondary); }
+.team-b-panel .btn-plus { background: var(--secondary); }
+
+/* Faults Section */
+.fault-section {
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid var(--border);
+}
+.fault-section h3 {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    text-align: center;
+}
+.fault-buttons {
+    display: flex;
+    gap: 12px;
+}
+.fault-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.fault-team-label {
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-align: center;
+    color: var(--text);
+}
+.btn-fault {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fff3e0;
+    color: var(--secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.btn-fault:active {
+    background: #ffe0b2;
+}
+
+/* Scoring Actions */
+.scoring-actions {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    justify-content: center;
+    background: #fafafa;
+    border-top: 1px solid var(--border);
+}
+
+/* Score Log */
+.score-log {
+    padding: 12px 16px;
+    background: white;
+}
+.score-log h3 {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+.log-list {
+    max-height: 180px;
+    overflow-y: auto;
+    font-size: 0.75rem;
+}
+.log-entry {
+    padding: 4px 0;
+    border-bottom: 1px solid #f5f5f5;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+}
+.log-entry .log-action { font-weight: 600; }
+.log-entry .log-score { color: var(--text-light); }
+
+/* ============================================
+   MODALS
+   ============================================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal.hidden { display: none; }
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 90%;
+    max-width: 360px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+.modal-content h3 {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+.modal-content p {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.win-modal .win-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+.win-modal h2 {
+    color: var(--primary-dark);
+    margin-bottom: 6px;
+}
+.win-modal .win-score {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin: 10px 0 16px;
+}
+
+/* ============================================
+   BEST OF 3 - Game indicators
+   ============================================ */
+.games-indicator {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 4px;
+}
+.game-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e0e0e0;
+}
+.game-dot.won-a { background: var(--primary); }
+.game-dot.won-b { background: var(--secondary); }
+.game-dot.current { border: 2px solid var(--accent); background: white; }
+
+/* ============================================
+   KNOCKOUT - Advancement indicators
+   ============================================ */
+.advancement-note {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-align: center;
+    padding: 4px;
+    background: #e3f2fd;
+    border-radius: var(--radius-sm);
+    margin-top: 4px;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #bdbdbd; border-radius: 4px; }
+
+/* Disable state for finished matches */
+.match-finished .btn-score,
+.match-finished .btn-fault {
+    opacity: 0.4;
+    pointer-events: none;
+}
