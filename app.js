@@ -267,12 +267,60 @@ function getMatchState(matchId) {
 function resetAllData() {
     state.matches = {};
     saveState();
-    goToDashboard();
+    navigate('#/');
 }
 
 
 // ============================================
-// NAVIGATION
+// HASH ROUTER
+// ============================================
+// Routes:
+//   #/                           -> Dashboard
+//   #/category/:catId            -> Category page
+//   #/scoring/:catId/:matchId    -> Live scoring page
+
+function navigate(hash) {
+    if (window.location.hash !== hash) {
+        window.location.hash = hash;
+    } else {
+        // Hash is the same, but we still need to render (e.g., init)
+        handleRoute();
+    }
+}
+
+function handleRoute() {
+    const hash = window.location.hash || '#/';
+    const parts = hash.replace('#/', '').split('/');
+
+    // Stop timer when leaving scoring page
+    stopTimer();
+
+    if (parts[0] === 'category' && parts[1]) {
+        const catId = parts[1];
+        if (TOURNAMENT_DATA[catId]) {
+            renderCategoryPage(catId);
+            return;
+        }
+    }
+
+    if (parts[0] === 'scoring' && parts[1] && parts[2]) {
+        const catId = parts[1];
+        const matchId = parts[2];
+        if (TOURNAMENT_DATA[catId]) {
+            renderScoringPage(catId, matchId);
+            return;
+        }
+    }
+
+    // Default: dashboard
+    renderDashboard();
+}
+
+window.addEventListener('hashchange', handleRoute);
+
+
+// ============================================
+// NAVIGATION (route triggers)
 // ============================================
 
 function showPage(pageId) {
@@ -282,6 +330,16 @@ function showPage(pageId) {
 }
 
 function goToDashboard() {
+    navigate('#/');
+}
+
+function openCategory(catId) {
+    navigate(`#/category/${catId}`);
+}
+
+// Actual render functions called by the router
+
+function renderDashboard() {
     stopTimer();
     state.currentCategory = null;
     state.currentMatch = null;
@@ -289,8 +347,9 @@ function goToDashboard() {
     showPage('dashboard');
 }
 
-function openCategory(catId) {
+function renderCategoryPage(catId) {
     state.currentCategory = catId;
+    state.currentMatch = null;
     const cat = TOURNAMENT_DATA[catId];
     document.getElementById('categoryTitle').textContent = cat.title;
     document.getElementById('categoryScoring').textContent = `Scoring: ${cat.scoring} pts/match`;
@@ -768,6 +827,10 @@ function renderTeamsList(catId) {
 // ============================================
 
 function startScoring(catId, matchId) {
+    navigate(`#/scoring/${catId}/${matchId}`);
+}
+
+function renderScoringPage(catId, matchId) {
     const cat = TOURNAMENT_DATA[catId];
     state.currentCategory = catId;
     state.currentMatch = matchId;
@@ -779,6 +842,11 @@ function startScoring(catId, matchId) {
             if (m.id === matchId) { matchFixture = m; break; }
         }
         if (matchFixture) break;
+    }
+
+    if (!matchFixture) {
+        navigate('#/');
+        return;
     }
 
     const resolved = resolveTeams(catId, matchFixture);
@@ -823,7 +891,7 @@ function startScoring(catId, matchId) {
 function exitScoring() {
     stopTimer();
     state.currentMatch = null;
-    openCategory(state.currentCategory);
+    navigate(`#/category/${state.currentCategory}`);
 }
 
 function updateScoreDisplay() {
@@ -892,10 +960,11 @@ function addPoint(side) {
 
     ms.log.push({ action: 'point', side, scoreA: ms.scoreA, scoreB: ms.scoreB, time: ms.timerSeconds });
 
-    // Animate
+    // Animate score bump + confetti
     const el = document.getElementById(side === 'A' ? 'scoreA' : 'scoreB');
     el.classList.add('bump');
     setTimeout(() => el.classList.remove('bump'), 200);
+    launchConfetti(side);
 
     checkWinCondition(ms, cat);
     updateScoreDisplay();
@@ -951,10 +1020,11 @@ function recordFault(faultingSide, faultType) {
         time: ms.timerSeconds,
     });
 
-    // Animate
+    // Animate score bump + confetti (on the scoring side, not the faulting side)
     const el = document.getElementById(scoringSide === 'A' ? 'scoreA' : 'scoreB');
     el.classList.add('bump');
     setTimeout(() => el.classList.remove('bump'), 200);
+    launchConfetti(scoringSide);
 
     checkWinCondition(ms, cat);
     updateScoreDisplay();
@@ -1257,6 +1327,49 @@ function confirmResetAll() {
 
 
 // ============================================
+// CONFETTI
+// ============================================
+
+const CONFETTI_COLORS = ['#4caf50', '#ff9800', '#e91e63', '#2196f3', '#ffeb3b', '#9c27b0', '#00bcd4', '#ff5722'];
+const CONFETTI_SHAPES = ['circle', 'square', 'strip'];
+
+function launchConfetti(side) {
+    const container = document.getElementById('confettiContainer');
+    const count = 30;
+
+    // Determine burst origin: left half for Team A, right half for Team B
+    const originX = side === 'A' ? 20 : 80; // % from left
+
+    for (let i = 0; i < count; i++) {
+        const piece = document.createElement('div');
+        const shape = CONFETTI_SHAPES[Math.floor(Math.random() * CONFETTI_SHAPES.length)];
+        const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        const x = originX + (Math.random() - 0.5) * 40;  // spread around origin
+        const delay = Math.random() * 0.2;
+        const duration = 0.7 + Math.random() * 0.6;
+        const rotation = (Math.random() - 0.5) * 720;
+
+        piece.className = `confetti-piece ${shape}`;
+        piece.style.cssText = `
+            left: ${x}%;
+            top: 15%;
+            background: ${color};
+            animation-delay: ${delay}s;
+            animation-duration: ${duration}s;
+            --rotation: ${rotation}deg;
+        `;
+
+        container.appendChild(piece);
+    }
+
+    // Clean up after animation finishes
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 1500);
+}
+
+
+// ============================================
 // RULES TOGGLE
 // ============================================
 
@@ -1274,7 +1387,7 @@ function toggleRules() {
 
 function init() {
     loadState();
-    updateDashboardStatuses();
+    handleRoute(); // Render based on current hash (supports refresh & bookmarks)
 }
 
 // Run on load
