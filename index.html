@@ -100,7 +100,22 @@
         </div>
 
         <div class="dashboard-actions">
-            <button class="btn btn-danger" onclick="confirmResetAll()">Reset All Data</button>
+            <button class="btn btn-secondary btn-small" onclick="showPinPrompt()">Admin</button>
+        </div>
+
+        <!-- PIN Prompt -->
+        <div id="pinOverlay" class="modal hidden">
+            <div class="modal-overlay" onclick="closePinPrompt()"></div>
+            <div class="modal-content">
+                <h3>Enter Admin PIN</h3>
+                <input type="password" id="pinInput" inputmode="numeric" maxlength="4"
+                       class="pin-input" placeholder="----" autocomplete="off">
+                <p id="pinError" class="pin-error hidden">Wrong PIN</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closePinPrompt()">Cancel</button>
+                    <button class="btn btn-primary" onclick="verifyPin()">Unlock</button>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1327,6 +1327,53 @@ function confirmResetAll() {
 
 
 // ============================================
+// PIN-PROTECTED ADMIN
+// ============================================
+
+const ADMIN_PIN = '1040';
+
+function showPinPrompt() {
+    const overlay = document.getElementById('pinOverlay');
+    const input = document.getElementById('pinInput');
+    const error = document.getElementById('pinError');
+    input.value = '';
+    error.classList.add('hidden');
+    overlay.classList.remove('hidden');
+    setTimeout(() => input.focus(), 100);
+}
+
+function closePinPrompt() {
+    document.getElementById('pinOverlay').classList.add('hidden');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinError').classList.add('hidden');
+}
+
+function verifyPin() {
+    const input = document.getElementById('pinInput');
+    const error = document.getElementById('pinError');
+
+    if (input.value === ADMIN_PIN) {
+        closePinPrompt();
+        confirmResetAll();
+    } else {
+        error.classList.remove('hidden');
+        input.value = '';
+        input.focus();
+    }
+}
+
+// Allow pressing Enter in PIN field
+document.addEventListener('DOMContentLoaded', () => {
+    const pinInput = document.getElementById('pinInput');
+    if (pinInput) {
+        pinInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyPin();
+        });
+    }
+});
+
+
+// ============================================
 // CONFETTI
 // ============================================
 

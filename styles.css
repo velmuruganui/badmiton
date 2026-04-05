@@ -746,6 +746,32 @@ body {
     justify-content: center;
 }
 
+/* PIN Input */
+.pin-input {
+    display: block;
+    width: 140px;
+    margin: 12px auto;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 8px;
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.2s;
+}
+.pin-input:focus {
+    border-color: var(--primary);
+}
+.pin-error {
+    color: var(--danger);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.pin-error.hidden { display: none; }
+
 .win-modal .win-icon {
     font-size: 3rem;
     margin-bottom: 8px;
